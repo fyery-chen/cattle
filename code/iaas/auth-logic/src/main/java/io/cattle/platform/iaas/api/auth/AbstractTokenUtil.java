@@ -322,6 +322,9 @@ public abstract class AbstractTokenUtil implements TokenUtil {
             settingsUtils.changeSetting(SecurityConstants.AUTH_ENABLER, user.getId());
         }
         if (account != null) {
+            if (user.getRole() != null) {
+                account.setKind(user.getRole());
+            }
             DataAccessor.fields(account).withKey(SecurityConstants.HAS_LOGGED_IN).set(true);
             objectManager.persist(account);
         }
@@ -412,8 +415,9 @@ public abstract class AbstractTokenUtil implements TokenUtil {
         String profilePicture = ObjectUtils.toString(jsonData.get("profilePicture"));
         String profileUrl = ObjectUtils.toString(jsonData.get("profileUrl"));
         String login = ObjectUtils.toString(jsonData.get("login"));
+        String role = ObjectUtils.toString(jsonData.get("role"));
         boolean user = Boolean.TRUE.equals(jsonData.get("user"));
-        return new Identity(externalIdType, externalId, name, profileUrl, profilePicture, login, user);
+        return new Identity(new Identity(externalIdType, externalId, name, profileUrl, profilePicture, login, user), role, null);
     }
 
     public Token getUserIdentityFromJWT() {
